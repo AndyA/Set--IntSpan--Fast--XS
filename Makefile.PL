@@ -8,6 +8,7 @@ warn "Optional ExtUtils::MakeMaker::Coverage not available\n" if $@;
 WriteMakefile(
     ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
     NAME          => 'Set::IntSpan::Fast',
+    BASEEXT       => 'XS',
     AUTHOR        => 'Andy Armstrong <andy@hexten.net>',
     VERSION_FROM  => 'lib/Set/IntSpan/Fast.pm',
     ABSTRACT_FROM => 'lib/Set/IntSpan/Fast.pm',
@@ -18,6 +19,8 @@ WriteMakefile(
         'Data::Types' => 0,
         'List::Util'  => 0,
     },
+    OBJECT => q/$(O_FILES)/,
+    # OBJECT => 'XS.o',
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Set-IntSpan-Fast-*' },
 );
