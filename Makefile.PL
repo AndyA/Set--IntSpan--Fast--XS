@@ -2,25 +2,20 @@
 use strict;
 use ExtUtils::MakeMaker;
 
-eval 'use ExtUtils::MakeMaker::Coverage';
-warn "Optional ExtUtils::MakeMaker::Coverage not available\n" if $@;
-
 WriteMakefile(
     ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
-    NAME          => 'Set::IntSpan::Fast',
-    BASEEXT       => 'XS',
+    NAME          => 'Set::IntSpan::Fast::XS',
     AUTHOR        => 'Andy Armstrong <andy@hexten.net>',
-    VERSION_FROM  => 'lib/Set/IntSpan/Fast.pm',
-    ABSTRACT_FROM => 'lib/Set/IntSpan/Fast.pm',
+    VERSION_FROM  => 'lib/Set/IntSpan/Fast/XS.pm',
+    ABSTRACT_FROM => 'lib/Set/IntSpan/Fast/XS.pm',
     LICENSE       => 'perl',
     PL_FILES      => {},
     PREREQ_PM     => {
-        'Test::More'  => 0,
-        'Data::Types' => 0,
-        'List::Util'  => 0,
+        'Test::More'         => 0,
+        'Data::Types'        => 0,
+        'List::Util'         => 0,
+        'Set::IntSpan::Fast' => '1.12',
     },
-    OBJECT => q/$(O_FILES)/,
-    # OBJECT => 'XS.o',
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES    => 'Set-IntSpan-Fast-*' },
+    clean => { FILES    => 'Set-IntSpan-Fast-XS-*' },
 );
