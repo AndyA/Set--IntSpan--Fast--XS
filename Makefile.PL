@@ -1,6 +1,11 @@
 #!/usr/bin/perl -w
 use strict;
+use lib qw(inc);
 use ExtUtils::MakeMaker;
+use Devel::CheckLib;
+
+# Check that we have a C compiler
+check_lib_or_exit();
 
 WriteMakefile(
     ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),

@@ -15,17 +15,31 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 =cut
 
 BEGIN {
-    our $VERSION = '1.11';
+    our $VERSION = '0.01';
     bootstrap Set::IntSpan::Fast::XS $VERSION;
 }
 
-sub add {
-    my $self = shift;
-    $self->add_range( $self->_list_to_ranges( @_ ) );
+sub _list_to_ranges {
+    my $self   = shift;
+    my $ar     = shift;
+    my @list   = sort { $a <=> $b } @$ar;
+    my @ranges = ();
+    my $count  = scalar( @list );
+    my $pos    = 0;
+    while ( $pos < $count ) {
+        my $end = $pos + 1;
+        $end++
+          while $end < $count && $list[$end] <= $list[ $end - 1 ] + 1;
+        push @ranges, ( $list[$pos], $list[ $end - 1 ] + 1 );
+        $pos = $end;
+    }
+
+    return \@ranges;
 }
 
 sub _tidy_ranges {
-    my ( $self, @r ) = @_;
+    my ( $self, $r ) = @_;
+    my @r = @$r;
     my @s = ();
     for ( my $p = 0; $p <= $#r; $p += 2 ) {
         push @s, [ $r[$p], $r[ $p + 1 ] ];
@@ -42,63 +56,20 @@ sub _tidy_ranges {
         }
     }
 
-    return map { $_->[0], $_->[1] + 1 } @t;
+    return [ map { $_->[0], $_->[1] + 1 } @t ];
 }
 
-sub __merge {
-    my ( $self, $s1, $s2 ) = @_;
-
-    my @out = ();
-
-    while ( @$s1 || @$s2 ) {
-
-        my ( $lo, $hi );
-        if ( @$s1 && @$s2 ) {
-            ( $lo, $hi )
-              = $s1->[0] < $s2->[0]
-              ? splice @$s1, 0, 2
-              : splice @$s2, 0, 2;
-        }
-        elsif ( @$s1 ) {
-            ( $lo, $hi ) = splice @$s1, 0, 2;
-        }
-        else {
-            ( $lo, $hi ) = splice @$s2, 0, 2;
-        }
-
-        if ( @out && $lo <= $out[-1] ) {
-            $out[-1] = max( $out[-1], $hi );
-        }
-        else {
-            push @out, $lo, $hi;
-        }
-    }
-
-    return \@out;
+sub add {
+    my $self = shift;
+    # TODO: When the existing set is large and the number of insertions
+    # is small the old method will be quicker. We need to characterise
+    # this.
+    @$self = @{ $self->_merge( $self->_list_to_ranges( \@_ ), $self ) };
 }
 
 sub add_range {
     my $self = shift;
-
-    my @r = $self->_tidy_ranges( @_ );
-    @$self = @{ $self->_merge( \@r, $self ) };
-}
-
-sub _list_to_ranges {
-    my $self   = shift;
-    my @list   = sort { $a <=> $b } @_;
-    my @ranges = ();
-    my $count  = scalar( @list );
-    my $pos    = 0;
-    while ( $pos < $count ) {
-        my $end = $pos + 1;
-        $end++
-          while $end < $count && $list[$end] <= $list[ $end - 1 ] + 1;
-        push @ranges, ( $list[$pos], $list[ $end - 1 ] );
-        $pos = $end;
-    }
-
-    return @ranges;
+    @$self = @{ $self->_merge( $self->_tidy_ranges( \@_ ), $self ) };
 }
 
 1;

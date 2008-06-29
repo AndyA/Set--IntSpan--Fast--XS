@@ -1,4 +1,5 @@
 Changes
+inc/Devel/CheckLib.pm
 lib/Set/IntSpan/Fast/XS.pm
 Makefile.PL
 MANIFEST

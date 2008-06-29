@@ -19,6 +19,11 @@ _av_store_iv( AV * ar, I32 pos, IV val ) {
     av_store( ar, pos, newSViv( val ) );
 }
 
+static void
+_av_push_iv( AV * ar, IV val ) {
+    av_push( ar, newSViv( val ) );
+}
+
 static IV
 __find_pos( AV * self, IV val, IV low ) {
     IV high = ( IV ) av_len( self ) + 1;
@@ -46,8 +51,6 @@ __merge( AV * self, AV * s1, AV * s2 ) {
     I32 p1 = 0, p2 = 0, po = 0;
     IV lo, hi, last;
     AV *out = newAV(  );
-
-    av_extend( out, l1 + l2 - 1 );
 
     while ( p1 < l1 || p2 < l2 ) {
         if ( p1 < l1 && p2 < l2 ) {
@@ -83,15 +86,13 @@ __merge( AV * self, AV * s1, AV * s2 ) {
             }
         }
 
-        _av_store_iv( out, po++, lo );
-        _av_store_iv( out, po++, hi );
+        _av_push_iv( out, lo );
+        _av_push_iv( out, hi );
+        po += 2;
     }
-
-    AvMAX( out ) = AvFILLp( out ) = po - 1;
 
     return out;
 }
-
 
 /* *INDENT-OFF* */
 

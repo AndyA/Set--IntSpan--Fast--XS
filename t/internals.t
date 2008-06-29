@@ -58,11 +58,11 @@ for my $tidy ( @tidy ) {
       . join( ', ', @in )
       . ') --> ('
       . join( ', ', @out ) . ')';
-    my @got = $set->_tidy_ranges( @in );
-    unless ( is_deeply( [@got], [@out], $desc ) ) {
+    my $got = $set->_tidy_ranges( \@in );
+    unless ( is_deeply( $got, [@out], $desc ) ) {
         diag(
             Data::Dumper->Dump(
-                [ \@in, \@out, \@got ],
+                [ \@in, \@out, $got ],
                 [qw(in want got)]
             )
         );
