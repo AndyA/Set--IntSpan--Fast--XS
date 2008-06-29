@@ -1,8 +1,8 @@
+#!perl
+use strict;
+use warnings;
 use Test::More qw(no_plan);
-
-BEGIN {
-    use_ok( 'Set::IntSpan::Fast::XS' );
-}
+use Set::IntSpan::Fast::XS;
 
 sub brute_force_card_in_range {
     my $lo   = shift;
@@ -45,7 +45,7 @@ sub brute_force_card_in_range {
     my $stride = int( ( $max - $min ) / 5 );
     for ( my $lo = $min - $stride * 2;
         $lo <= $max + $stride * 2; $lo++ ) {
-        $hi = $lo + $stride;
+        my $hi = $lo + $stride;
         my $want = brute_force_card_in_range( $lo, $hi, @members );
         my $got = $set->cardinality( $lo, $hi );
         is( $got, $want, "cardinality for $lo to $hi OK" );
@@ -53,8 +53,8 @@ sub brute_force_card_in_range {
 
     my $copy = $set->copy();
     isa_ok $copy, 'Set::IntSpan::Fast::XS';
-    @orig = $set->as_array();
-    @copy = $copy->as_array();
+    my @orig = $set->as_array();
+    my @copy = $copy->as_array();
 
     is_deeply( \@copy, \@orig, 'copy' );
 

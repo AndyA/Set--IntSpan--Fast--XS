@@ -7,6 +7,7 @@ t/00-load.t
 t/all-range.t
 t/basic.t
 t/construct.t
+t/internals.t
 t/misc.t
 t/miscstring.t
 t/pod.t

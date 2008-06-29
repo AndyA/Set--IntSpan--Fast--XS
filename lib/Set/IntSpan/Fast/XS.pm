@@ -4,7 +4,9 @@ require 5.008;
 
 use strict;
 use warnings;
+use Carp;
 use base qw( DynaLoader Set::IntSpan::Fast );
+use List::Util qw( max );
 
 =head1 NAME
 
@@ -22,46 +24,65 @@ sub add {
     $self->add_range( $self->_list_to_ranges( @_ ) );
 }
 
+sub _tidy_ranges {
+    my ( $self, @r ) = @_;
+    my @s = ();
+    for ( my $p = 0; $p <= $#r; $p += 2 ) {
+        push @s, [ $r[$p], $r[ $p + 1 ] ];
+    }
+    my @t = sort { $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1] } @s;
+
+    for ( my $p = 1; $p <= $#t; ) {
+        if ( $t[ $p - 1 ][1] >= $t[$p][0] ) {
+            $t[ $p - 1 ][1] = max( $t[ $p - 1 ][1], $t[$p][1] );
+            splice @t, $p, 1;
+        }
+        else {
+            $p++;
+        }
+    }
+
+    return map { $_->[0], $_->[1] + 1 } @t;
+}
+
+sub __merge {
+    my ( $self, $s1, $s2 ) = @_;
+
+    my @out = ();
+
+    while ( @$s1 || @$s2 ) {
+
+        my ( $lo, $hi );
+        if ( @$s1 && @$s2 ) {
+            ( $lo, $hi )
+              = $s1->[0] < $s2->[0]
+              ? splice @$s1, 0, 2
+              : splice @$s2, 0, 2;
+        }
+        elsif ( @$s1 ) {
+            ( $lo, $hi ) = splice @$s1, 0, 2;
+        }
+        else {
+            ( $lo, $hi ) = splice @$s2, 0, 2;
+        }
+
+        if ( @out && $lo <= $out[-1] ) {
+            $out[-1] = max( $out[-1], $hi );
+        }
+        else {
+            push @out, $lo, $hi;
+        }
+    }
+
+    return \@out;
+}
+
 sub add_range {
     my $self = shift;
 
-    my $count = scalar( @_ );
-    for ( my $p = 0; $p < $count; $p += 2 ) {
-        my ( $from, $to ) = ( $_[$p], $_[ $p + 1 ] + 1 );
-
-        my $fpos = $self->_find_pos( $from );
-        my $tpos = $self->_find_pos( $to + 1, $fpos );
-
-        $from = $self->[ --$fpos ] if ( $fpos & 1 );
-        $to   = $self->[ $tpos++ ] if ( $tpos & 1 );
-
-        splice @$self, $fpos, $tpos - $fpos, ( $from, $to );
-    }
+    my @r = $self->_tidy_ranges( @_ );
+    @$self = @{ $self->_merge( \@r, $self ) };
 }
-
-# sub _iterate_ranges {
-#     my $self = shift;
-#     my $cb   = pop;
-# 
-#     my $count = scalar( @_ );
-# 
-#     croak "Range list must have an even number of elements"
-#       if ( $count % 2 ) != 0;
-# 
-#     for ( my $p = 0; $p < $count; $p += 2 ) {
-#         my ( $from, $to ) = ( $_[$p], $_[ $p + 1 ] );
-#         croak "Range limits must be integers"
-#           unless is_int( $from ) && is_int( $to );
-#         croak "Range limits must be in ascending order"
-#           unless $from <= $to;
-#         croak "Value out of range"
-#           unless $from >= NEGATIVE_INFINITY && $to <= POSITIVE_INFINITY;
-# 
-#         # Internally we store inclusive/exclusive ranges to
-#         # simplify comparisons, hence '$to + 1'
-#         $cb->( $from, $to + 1 );
-#     }
-# }
 
 sub _list_to_ranges {
     my $self   = shift;
