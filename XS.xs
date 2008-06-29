@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 static IV
-find_pos( AV * self, IV val, IV low ) {
+__find_pos( AV * self, IV val, IV low ) {
     IV high = ( IV ) av_len( self ) + 1;
 
     while ( low < high ) {
@@ -42,5 +42,5 @@ IV val = SvIV(ST(1));
 IV low = ( items == 3 ) ? SvIV( ST( 2 ) ) : 0;
 PPCODE:
 {
-    XSRETURN_IV( find_pos(self, val, low ) );
+    XSRETURN_IV( __find_pos(self, val, low ) );
 }

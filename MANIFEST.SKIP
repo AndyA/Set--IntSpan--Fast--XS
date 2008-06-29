@@ -19,3 +19,5 @@
 ^cover_db
 ^try[.]store$
 ^\.prove$
+^tmon\.out$
+\.(bs|o|c)$
