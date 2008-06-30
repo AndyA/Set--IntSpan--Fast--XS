@@ -5,9 +5,9 @@ require 5.008;
 use strict;
 use warnings;
 use Carp;
-use base qw( DynaLoader Set::IntSpan::Fast );
 use List::Util qw( max );
 use Data::Swap;
+use DynaLoader;
 
 =head1 NAME
 
@@ -35,7 +35,24 @@ See that module for details of the interface.
 
 BEGIN {
     our $VERSION = '0.03';
+    our @ISA     = qw( DynaLoader );
     bootstrap Set::IntSpan::Fast::XS $VERSION;
+
+    eval "use Set::IntSpan::Fast::PP";
+    if ( $@ ) {
+        if ( $@ =~ /^Can't\s+locate/ ) {
+            eval "use Set::IntSpan::Fast";
+            die $@ if $@;
+            push @ISA, qw( Set::IntSpan::Fast );
+        }
+        else {
+            die $@;
+        }
+    }
+    else {
+        push @ISA, qw( Set::IntSpan::Fast::PP );
+    }
+
 }
 
 sub _list_to_ranges {

@@ -1,4 +1,19 @@
 Revision history for Set-IntSpan-Fast-XS
 
-0.01	2008-06-30
+0.01    2008-06-30
+
         Initial release.
+
+0.02    2008-06-30
+
+        Adaptive algorithm selection should mean we're always
+        faster than Set::IntSpan::Fast.
+
+        Implemented union in terms of _merge. Much faster. Also
+        speeds up, e.g. intersection and anything else that
+        calls union directly or indirectly.
+
+0.03    2008-07-01
+
+        Magic @ISA bashing allows us to be loaded automatically by
+        Set::IntSpan::Fast.
