@@ -33,7 +33,7 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-    our $VERSION = '0.02';
+    our $VERSION = '0.01';
     bootstrap Set::IntSpan::Fast::XS $VERSION;
 }
 
