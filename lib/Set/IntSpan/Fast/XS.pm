@@ -5,9 +5,9 @@ require 5.008;
 use strict;
 use warnings;
 use Carp;
-use base qw( DynaLoader Set::IntSpan::Fast );
 use List::Util qw( max );
-# use Data::Swap;
+use Data::Swap;
+use DynaLoader;
 
 =head1 NAME
 
@@ -15,7 +15,7 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 
 =head1 VERSION
 
-This document describes Set::IntSpan::Fast::XS version 0.02
+This document describes Set::IntSpan::Fast::XS version 0.03
 
 =head1 SYNOPSIS
 
@@ -34,8 +34,25 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-    our $VERSION = '0.02';
+    our $VERSION = '0.03';
+    our @ISA     = qw( DynaLoader );
     bootstrap Set::IntSpan::Fast::XS $VERSION;
+
+    eval "use Set::IntSpan::Fast::PP";
+    if ( $@ ) {
+        if ( $@ =~ /^Can't\s+locate/ ) {
+            eval "use Set::IntSpan::Fast";
+            die $@ if $@;
+            push @ISA, qw( Set::IntSpan::Fast );
+        }
+        else {
+            die $@;
+        }
+    }
+    else {
+        push @ISA, qw( Set::IntSpan::Fast::PP );
+    }
+
 }
 
 sub _list_to_ranges {
@@ -80,22 +97,24 @@ sub _tidy_ranges {
 
 sub add {
     my $self = shift;
-    if ( 1 || @_ < 100 ) {
+    if ( @_ < 100 ) {
         $self->_add_splice( @_ );
     }
     else {
         $self->_add_merge( @_ );
     }
+    return;
 }
 
 sub add_range {
     my $self = shift;
-    if ( 1 || @_ < 100 ) {
+    if ( @_ < 100 ) {
         $self->_add_range_splice( @_ );
     }
     else {
         $self->_add_range_merge( @_ );
     }
+    return;
 }
 
 sub _add_merge {
@@ -111,8 +130,12 @@ sub _add_range_merge {
 sub _splice {
     my ( $self, $from, $into ) = @_;
 
-    ( $from, $into ) = ( $into, $from )
-      if @$from > @$into;
+    my $class = ref $self;
+
+    if ( @$from > @$into ) {
+        swap $from, $into;
+        bless $into, $class;
+    }
 
     my $count = scalar @$from;
 
@@ -128,12 +151,10 @@ sub _splice {
         splice @$into, $fpos, $tpos - $fpos, ( $from, $to );
     }
 
-    @$self = @$into;
+    swap $self, $into;
+    bless $self, $class;
 
-    # swap $self, $into;
-    # bless $self, ref $into;
-
-    # return [@$into];
+    return;
 }
 
 sub _add_splice {
@@ -147,19 +168,20 @@ sub _add_range_splice {
 }
 
 sub _merge_and_swap {
-    die;
     my $self = shift;
     my $new  = $self->_merge( @_ );
-    @$self = @$new;
 
-    # swap $self, $new;
-    # bless $self, ref $new;
+    my $class = ref $self;
+    swap $self, $new;
+    bless $self, $class;
+
+    return;
 }
 
-# sub merge {
-#     my $self = shift;
-#     $self->_merge_and_swap( $self, $_ ) for @_;
-# }
+sub merge {
+    my $self = shift;
+    $self->_merge_and_swap( $self, $_ ) for @_;
+}
 
 1;
 

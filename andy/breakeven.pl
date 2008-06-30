@@ -29,17 +29,22 @@ while ( $set < 1000_000 ) {
                 'add' );
 
             my @order = sort { $bm{$a} <=> $bm{$b} } keys %bm;
-            my $best = $bm{ $order[0] };
+            my $best  = $bm{ $order[0] };
+            my $auto  = $bm{auto};
 
             printf(
-                "set=%9d, insert=%9d, order=%s\n",
+                "set=%9d, insert=%9d, order=%s%s\n",
                 int( $set ),
                 int( $insert ),
                 join(
                     ', ',
                     map { sprintf( "%s (%6.2f)", $_, $bm{$_} / $best ) }
                       @order
-                )
+                ),
+                $auto > $best
+                ? sprintf( " --- auto %6.2f times slower",
+                    $auto / $best )
+                : ''
             );
         }
         $insert *= 2;
