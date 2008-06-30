@@ -7,6 +7,7 @@ use warnings;
 use Carp;
 use base qw( DynaLoader Set::IntSpan::Fast );
 use List::Util qw( max );
+# use Data::Swap;
 
 =head1 NAME
 
@@ -79,15 +80,35 @@ sub _tidy_ranges {
 
 sub add {
     my $self = shift;
-    @$self = @{ $self->_merge( $self->_list_to_ranges( \@_ ), $self ) };
+    if ( 1 || @_ < 100 ) {
+        $self->_add_splice( @_ );
+    }
+    else {
+        $self->_add_merge( @_ );
+    }
 }
 
 sub add_range {
     my $self = shift;
-    @$self = @{ $self->_merge( $self->_tidy_ranges( \@_ ), $self ) };
+    if ( 1 || @_ < 100 ) {
+        $self->_add_range_splice( @_ );
+    }
+    else {
+        $self->_add_range_merge( @_ );
+    }
 }
 
-sub _merge2 {
+sub _add_merge {
+    my $self = shift;
+    $self->_merge_and_swap( $self->_list_to_ranges( \@_ ), $self );
+}
+
+sub _add_range_merge {
+    my $self = shift;
+    $self->_merge_and_swap( $self->_tidy_ranges( \@_ ), $self );
+}
+
+sub _splice {
     my ( $self, $from, $into ) = @_;
 
     ( $from, $into ) = ( $into, $from )
@@ -107,27 +128,38 @@ sub _merge2 {
         splice @$into, $fpos, $tpos - $fpos, ( $from, $to );
     }
 
-    return [@$into];
+    @$self = @$into;
+
+    # swap $self, $into;
+    # bless $self, ref $into;
+
+    # return [@$into];
 }
 
-sub add2 {
+sub _add_splice {
     my $self = shift;
-    @$self
-      = @{ $self->_merge2( $self->_list_to_ranges( \@_ ), $self ) };
+    $self->_splice( $self->_list_to_ranges( \@_ ), $self );
 }
 
-sub add_range2 {
+sub _add_range_splice {
     my $self = shift;
-    @$self = @{ $self->_merge2( $self->_tidy_ranges( \@_ ), $self ) };
+    $self->_splice( $self->_tidy_ranges( \@_ ), $self );
 }
 
-sub merge {
+sub _merge_and_swap {
+    die;
     my $self = shift;
+    my $new  = $self->_merge( @_ );
+    @$self = @$new;
 
-    for my $other ( @_ ) {
-        @$self = @{ $self->_merge( $self, $other ) };
-    }
+    # swap $self, $new;
+    # bless $self, ref $new;
 }
+
+# sub merge {
+#     my $self = shift;
+#     $self->_merge_and_swap( $self, $_ ) for @_;
+# }
 
 1;
 

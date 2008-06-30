@@ -18,6 +18,7 @@ WriteMakefile(
     PREREQ_PM     => {
         'Test::More'         => 0,
         'List::Util'         => 0,
+        'Data::Swap'         => '0.07',
         'Set::IntSpan::Fast' => '1.12',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

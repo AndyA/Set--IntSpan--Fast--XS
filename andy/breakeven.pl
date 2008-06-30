@@ -15,30 +15,31 @@ while ( $set < 1000_000 ) {
         unless ( $done{$key}++ ) {
             my %bm = ();
 
-            $bm{baseline}
+            $bm{base}
               = time_insert( $set, $insert, 'Set::IntSpan::Fast',
                 'add' );
             $bm{merge}
               = time_insert( $set, $insert, 'Set::IntSpan::Fast::XS',
-                'add' );
+                '_add_merge' );
             $bm{splice}
               = time_insert( $set, $insert, 'Set::IntSpan::Fast::XS',
-                'add2' );
+                '_add_splice' );
+            $bm{auto}
+              = time_insert( $set, $insert, 'Set::IntSpan::Fast::XS',
+                'add' );
 
             my @order = sort { $bm{$a} <=> $bm{$b} } keys %bm;
             my $best = $bm{ $order[0] };
 
             printf(
-                "set=%9d, insert=%9d, baseline=%10.4f, "
-                  . "merge=%10.4f, splice=%10.4f, order=%s\n",
+                "set=%9d, insert=%9d, order=%s\n",
                 int( $set ),
                 int( $insert ),
-                $bm{baseline},
-                $bm{merge},
-                $bm{splice},
-                join( ', ',
+                join(
+                    ', ',
                     map { sprintf( "%s (%6.2f)", $_, $bm{$_} / $best ) }
-                      @order )
+                      @order
+                )
             );
         }
         $insert *= 2;
