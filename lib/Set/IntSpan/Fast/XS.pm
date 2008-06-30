@@ -110,7 +110,7 @@ Please report any bugs or feature requests to
 C<bug-set-intspan-fast-xs@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
-==head1 AUTHOR
+=head1 AUTHOR
 
 Andy Armstrong  C<< <andy.armstrong@messagesystems.com> >>
 
