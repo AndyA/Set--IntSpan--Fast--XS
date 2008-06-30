@@ -15,7 +15,7 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 
 =head1 VERSION
 
-This document describes Set::IntSpan::Fast::XS version 0.03
+This document describes Set::IntSpan::Fast::XS version 0.04
 
 =head1 SYNOPSIS
 
@@ -34,7 +34,7 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-    our $VERSION = '0.03';
+    our $VERSION = '0.04';
     our @ISA     = qw( DynaLoader );
     bootstrap Set::IntSpan::Fast::XS $VERSION;
 
