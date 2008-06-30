@@ -79,15 +79,46 @@ sub _tidy_ranges {
 
 sub add {
     my $self = shift;
-    # TODO: When the existing set is large and the number of insertions
-    # is small the old method will be quicker. We need to characterise
-    # this.
     @$self = @{ $self->_merge( $self->_list_to_ranges( \@_ ), $self ) };
 }
 
 sub add_range {
     my $self = shift;
     @$self = @{ $self->_merge( $self->_tidy_ranges( \@_ ), $self ) };
+}
+
+sub _merge2 {
+    my ( $self, $from, $into ) = @_;
+
+    ( $from, $into ) = ( $into, $from )
+      if @$from > @$into;
+
+    my $count = scalar @$from;
+
+    for ( my $p = 0; $p < $count; $p += 2 ) {
+        my ( $from, $to ) = ( $from->[$p], $from->[ $p + 1 ] );
+
+        my $fpos = $self->_find_pos( $from );
+        my $tpos = $self->_find_pos( $to + 1, $fpos );
+
+        $from = $into->[ --$fpos ] if ( $fpos & 1 );
+        $to   = $into->[ $tpos++ ] if ( $tpos & 1 );
+
+        splice @$into, $fpos, $tpos - $fpos, ( $from, $to );
+    }
+
+    return [@$into];
+}
+
+sub add2 {
+    my $self = shift;
+    @$self
+      = @{ $self->_merge2( $self->_list_to_ranges( \@_ ), $self ) };
+}
+
+sub add_range2 {
+    my $self = shift;
+    @$self = @{ $self->_merge2( $self->_tidy_ranges( \@_ ), $self ) };
 }
 
 sub merge {
