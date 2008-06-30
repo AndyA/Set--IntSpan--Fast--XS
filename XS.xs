@@ -48,8 +48,9 @@ static AV *
 __merge( AV * self, AV * s1, AV * s2 ) {
     I32 l1 = av_len( s1 ) + 1;
     I32 l2 = av_len( s2 ) + 1;
-    I32 p1 = 0, p2 = 0, po = 0;
+
     IV lo, hi, last;
+    I32 p1 = 0, p2 = 0, po = 0;
     AV *out = newAV(  );
 
     while ( p1 < l1 || p2 < l2 ) {
