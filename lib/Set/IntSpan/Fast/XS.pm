@@ -12,6 +12,24 @@ use List::Util qw( max );
 
 Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 
+=head1 VERSION
+
+This document describes Set::IntSpan::Fast::XS version 0.01
+
+=head1 SYNOPSIS
+
+    use Set::IntSpan::Fast::XS;
+    
+    my $set = Set::IntSpan::Fast::XS->new();
+    $set->add(1, 3, 5, 7, 9);
+    $set->add_range(100, 1_000_000);
+    print $set->as_string(), "\n";    # prints 1,3,5,7,9,100-1000000
+
+=head1 DESCRIPTION
+
+This is a drop in replacement XS based version of L<Set::IntSpan::Fast>.
+See that module for details of the interface.
+
 =cut
 
 BEGIN {
@@ -72,20 +90,60 @@ sub add_range {
     @$self = @{ $self->_merge( $self->_tidy_ranges( \@_ ), $self ) };
 }
 
+sub merge {
+    my $self = shift;
+
+    for my $other ( @_ ) {
+        @$self = @{ $self->_merge( $self, $other ) };
+    }
+}
+
 1;
 
 __END__
 
-=head1 AUTHOR
+=head1 BUGS AND LIMITATIONS
 
-Andy Armstrong <andy@hexten.net>
+No bugs have been reported.
+
+Please report any bugs or feature requests to 
+C<bug-set-intspan-fast-xs@rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org>.
+
+==head1 AUTHOR
+
+Andy Armstrong  C<< <andy.armstrong@messagesystems.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2008, Andy Armstrong C<< <andy@hexten.net> >>. All
-rights reserved.
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>.
 
-This module is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself. See L<perlartistic>.
+Copyright (c) 2008, Message Systems, Inc.
+All rights reserved.
 
-=cut
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the following
+conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the
+      distribution.
+    * Neither the name Message Systems, Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
