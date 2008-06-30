@@ -17,7 +17,6 @@ WriteMakefile(
     PL_FILES      => {},
     PREREQ_PM     => {
         'Test::More'         => 0,
-        'Data::Types'        => 0,
         'List::Util'         => 0,
         'Set::IntSpan::Fast' => '1.12',
     },
