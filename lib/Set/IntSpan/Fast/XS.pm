@@ -15,7 +15,7 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 =cut
 
 BEGIN {
-    our $VERSION = '0.01';
+    our $VERSION = '0.02';
     bootstrap Set::IntSpan::Fast::XS $VERSION;
 }
 
