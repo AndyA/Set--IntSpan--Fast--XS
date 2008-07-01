@@ -22,7 +22,7 @@ WriteMakefile(
         'Test::More'         => 0,
         'List::Util'         => 0,
         'Data::Swap'         => '0.07',
-        'Set::IntSpan::Fast' => '1.12',
+        'Set::IntSpan::Fast' => '1.13',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Set-IntSpan-Fast-XS-*' },

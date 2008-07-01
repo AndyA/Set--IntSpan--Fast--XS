@@ -7,7 +7,7 @@ use warnings;
 use Carp;
 use List::Util qw( max );
 use Data::Swap;
-use DynaLoader;
+use base qw( DynaLoader Set::IntSpan::Fast::PP );
 
 =head1 NAME
 
@@ -15,7 +15,7 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 
 =head1 VERSION
 
-This document describes Set::IntSpan::Fast::XS version 0.04
+This document describes Set::IntSpan::Fast::XS version 0.05
 
 =head1 SYNOPSIS
 
@@ -34,24 +34,8 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-    our $VERSION = '0.04';
-    our @ISA     = qw( DynaLoader );
+    our $VERSION = '0.05';
     bootstrap Set::IntSpan::Fast::XS $VERSION;
-
-    eval "use Set::IntSpan::Fast::PP";
-    if ( $@ ) {
-        if ( $@ =~ /^Can't\s+locate/ ) {
-            eval "use Set::IntSpan::Fast";
-            die $@ if $@;
-            push @ISA, qw( Set::IntSpan::Fast );
-        }
-        else {
-            die $@;
-        }
-    }
-    else {
-        push @ISA, qw( Set::IntSpan::Fast::PP );
-    }
 
 }
 

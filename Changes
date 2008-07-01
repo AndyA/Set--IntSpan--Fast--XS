@@ -17,3 +17,7 @@ Revision history for Set-IntSpan-Fast-XS
 
         Magic @ISA bashing allows us to be loaded automatically by
         Set::IntSpan::Fast.
+
+0.04    2008-07-01
+
+        New version of S::I::F makes @ISA bashing redundant.
