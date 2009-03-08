@@ -15,7 +15,7 @@ Set::IntSpan::Fast::XS - Faster Set::IntSpan::Fast
 
 =head1 VERSION
 
-This document describes Set::IntSpan::Fast::XS version 0.05
+This document describes Set::IntSpan::Fast::XS version 0.06
 
 =head1 SYNOPSIS
 
@@ -34,7 +34,7 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-  our $VERSION = '0.05';
+  our $VERSION = '0.06';
   bootstrap Set::IntSpan::Fast::XS $VERSION;
 
 }
