@@ -21,3 +21,7 @@ Revision history for Set-IntSpan-Fast-XS
 0.04    2008-07-01
 
         New version of S::I::F makes @ISA bashing redundant.
+
+0.05    2009-03-08
+
+        Don't mask _list_to_ranges with out own incompatible version.

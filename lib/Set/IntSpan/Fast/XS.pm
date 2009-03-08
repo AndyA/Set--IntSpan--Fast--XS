@@ -39,7 +39,7 @@ BEGIN {
 
 }
 
-sub _list_to_ranges {
+sub _lr {
     my $self   = shift;
     my $ar     = shift;
     my @list   = sort { $a <=> $b } @$ar;
@@ -103,7 +103,7 @@ sub add_range {
 
 sub _add_merge {
     my $self = shift;
-    $self->_merge_and_swap( $self->_list_to_ranges( \@_ ), $self );
+    $self->_merge_and_swap( $self->_lr( \@_ ), $self );
 }
 
 sub _add_range_merge {
@@ -143,7 +143,7 @@ sub _splice {
 
 sub _add_splice {
     my $self = shift;
-    $self->_splice( $self->_list_to_ranges( \@_ ), $self );
+    $self->_splice( $self->_lr( \@_ ), $self );
 }
 
 sub _add_range_splice {
