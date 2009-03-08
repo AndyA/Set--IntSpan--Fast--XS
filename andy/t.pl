@@ -14,8 +14,8 @@ $| = 1;
 
 my $set = Set::IntSpan::Fast->new();
 
-$set->add(1, 3, 5, 7, 9);
-$set->add_range(100, 1_000_000);
+$set->add( 1, 3, 5, 7, 9 );
+$set->add_range( 100, 1_000_000 );
 print $set->as_string(), "\n";
 
 # $set->add_range(5, 7);

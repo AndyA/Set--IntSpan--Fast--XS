@@ -34,137 +34,136 @@ See that module for details of the interface.
 =cut
 
 BEGIN {
-    our $VERSION = '0.05';
-    bootstrap Set::IntSpan::Fast::XS $VERSION;
+  our $VERSION = '0.05';
+  bootstrap Set::IntSpan::Fast::XS $VERSION;
 
 }
 
 sub _lr {
-    my $self   = shift;
-    my $ar     = shift;
-    my @list   = sort { $a <=> $b } @$ar;
-    my @ranges = ();
-    my $count  = scalar( @list );
-    my $pos    = 0;
-    while ( $pos < $count ) {
-        my $end = $pos + 1;
-        $end++
-          while $end < $count && $list[$end] <= $list[ $end - 1 ] + 1;
-        push @ranges, ( $list[$pos], $list[ $end - 1 ] + 1 );
-        $pos = $end;
-    }
+  my $self   = shift;
+  my $ar     = shift;
+  my @list   = sort { $a <=> $b } @$ar;
+  my @ranges = ();
+  my $count  = scalar( @list );
+  my $pos    = 0;
+  while ( $pos < $count ) {
+    my $end = $pos + 1;
+    $end++ while $end < $count && $list[$end] <= $list[ $end - 1 ] + 1;
+    push @ranges, ( $list[$pos], $list[ $end - 1 ] + 1 );
+    $pos = $end;
+  }
 
-    return \@ranges;
+  return \@ranges;
 }
 
 sub _tidy_ranges {
-    my ( $self, $r ) = @_;
-    my @r = @$r;
-    my @s = ();
-    for ( my $p = 0; $p <= $#r; $p += 2 ) {
-        push @s, [ $r[$p], $r[ $p + 1 ] ];
-    }
-    my @t = sort { $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1] } @s;
+  my ( $self, $r ) = @_;
+  my @r = @$r;
+  my @s = ();
+  for ( my $p = 0; $p <= $#r; $p += 2 ) {
+    push @s, [ $r[$p], $r[ $p + 1 ] ];
+  }
+  my @t = sort { $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1] } @s;
 
-    for ( my $p = 1; $p <= $#t; ) {
-        if ( $t[ $p - 1 ][1] >= $t[$p][0] ) {
-            $t[ $p - 1 ][1] = max( $t[ $p - 1 ][1], $t[$p][1] );
-            splice @t, $p, 1;
-        }
-        else {
-            $p++;
-        }
+  for ( my $p = 1; $p <= $#t; ) {
+    if ( $t[ $p - 1 ][1] >= $t[$p][0] ) {
+      $t[ $p - 1 ][1] = max( $t[ $p - 1 ][1], $t[$p][1] );
+      splice @t, $p, 1;
     }
+    else {
+      $p++;
+    }
+  }
 
-    return [ map { $_->[0], $_->[1] + 1 } @t ];
+  return [ map { $_->[0], $_->[1] + 1 } @t ];
 }
 
 sub add {
-    my $self = shift;
-    if ( @_ < 100 ) {
-        $self->_add_splice( @_ );
-    }
-    else {
-        $self->_add_merge( @_ );
-    }
-    return;
+  my $self = shift;
+  if ( @_ < 100 ) {
+    $self->_add_splice( @_ );
+  }
+  else {
+    $self->_add_merge( @_ );
+  }
+  return;
 }
 
 sub add_range {
-    my $self = shift;
-    if ( @_ < 100 ) {
-        $self->_add_range_splice( @_ );
-    }
-    else {
-        $self->_add_range_merge( @_ );
-    }
-    return;
+  my $self = shift;
+  if ( @_ < 100 ) {
+    $self->_add_range_splice( @_ );
+  }
+  else {
+    $self->_add_range_merge( @_ );
+  }
+  return;
 }
 
 sub _add_merge {
-    my $self = shift;
-    $self->_merge_and_swap( $self->_lr( \@_ ), $self );
+  my $self = shift;
+  $self->_merge_and_swap( $self->_lr( \@_ ), $self );
 }
 
 sub _add_range_merge {
-    my $self = shift;
-    $self->_merge_and_swap( $self->_tidy_ranges( \@_ ), $self );
+  my $self = shift;
+  $self->_merge_and_swap( $self->_tidy_ranges( \@_ ), $self );
 }
 
 sub _splice {
-    my ( $self, $from, $into ) = @_;
+  my ( $self, $from, $into ) = @_;
 
-    my $class = ref $self;
+  my $class = ref $self;
 
-    if ( @$from > @$into ) {
-        swap $from, $into;
-        bless $into, $class;
-    }
+  if ( @$from > @$into ) {
+    swap $from, $into;
+    bless $into, $class;
+  }
 
-    my $count = scalar @$from;
+  my $count = scalar @$from;
 
-    for ( my $p = 0; $p < $count; $p += 2 ) {
-        my ( $from, $to ) = ( $from->[$p], $from->[ $p + 1 ] );
+  for ( my $p = 0; $p < $count; $p += 2 ) {
+    my ( $from, $to ) = ( $from->[$p], $from->[ $p + 1 ] );
 
-        my $fpos = $self->_find_pos( $from );
-        my $tpos = $self->_find_pos( $to + 1, $fpos );
+    my $fpos = $self->_find_pos( $from );
+    my $tpos = $self->_find_pos( $to + 1, $fpos );
 
-        $from = $into->[ --$fpos ] if ( $fpos & 1 );
-        $to   = $into->[ $tpos++ ] if ( $tpos & 1 );
+    $from = $into->[ --$fpos ] if ( $fpos & 1 );
+    $to   = $into->[ $tpos++ ] if ( $tpos & 1 );
 
-        splice @$into, $fpos, $tpos - $fpos, ( $from, $to );
-    }
+    splice @$into, $fpos, $tpos - $fpos, ( $from, $to );
+  }
 
-    swap $self, $into;
-    bless $self, $class;
+  swap $self, $into;
+  bless $self, $class;
 
-    return;
+  return;
 }
 
 sub _add_splice {
-    my $self = shift;
-    $self->_splice( $self->_lr( \@_ ), $self );
+  my $self = shift;
+  $self->_splice( $self->_lr( \@_ ), $self );
 }
 
 sub _add_range_splice {
-    my $self = shift;
-    $self->_splice( $self->_tidy_ranges( \@_ ), $self );
+  my $self = shift;
+  $self->_splice( $self->_tidy_ranges( \@_ ), $self );
 }
 
 sub _merge_and_swap {
-    my $self = shift;
-    my $new  = $self->_merge( @_ );
+  my $self = shift;
+  my $new  = $self->_merge( @_ );
 
-    my $class = ref $self;
-    swap $self, $new;
-    bless $self, $class;
+  my $class = ref $self;
+  swap $self, $new;
+  bless $self, $class;
 
-    return;
+  return;
 }
 
 sub merge {
-    my $self = shift;
-    $self->_merge_and_swap( $self, $_ ) for @_;
+  my $self = shift;
+  $self->_merge_and_swap( $self, $_ ) for @_;
 }
 
 1;
