@@ -1,0 +1,16 @@
+*.bak
+*.bs
+*.c
+*.o
+*.tar.gz
+.lwpcookies
+.prove
+Build
+Makefile
+Makefile.old
+Session.vim
+Set-IntSpan-Fast-XS-*
+_build*
+blib*
+cover_db
+pm_to_blib*
