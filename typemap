@@ -1,0 +1,5 @@
+const char *        T_PTR
+const sanuk *       T_PTR
+const sanuk_step *  T_PTR
+sanuk *             T_PTR
+sanuk_step *        T_PTR

@@ -13,19 +13,21 @@ check_lib_or_exit();
 WriteMakefile(
   ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
   license( 'perl' ),
-  NAME          => 'Set::IntSpan::Fast::XS',
-  AUTHOR        => 'Andy Armstrong <andy@hexten.net>',
-  VERSION_FROM  => 'lib/Set/IntSpan/Fast/XS.pm',
-  ABSTRACT_FROM => 'lib/Set/IntSpan/Fast/XS.pm',
-  PL_FILES      => {},
-  PREREQ_PM     => {
+  NAME         => 'Sanuk::Sex',
+  AUTHOR       => 'Andy Armstrong <andy@hexten.net>',
+  VERSION_FROM => 'lib/Sex/Sanuk.pm',
+  ABSTRACT     => 'Control Sanuk vibrator',
+  PL_FILES     => {},
+  PREREQ_PM    => {
     'Test::More'         => 0,
     'List::Util'         => 0,
     'Data::Swap'         => '0.07',
     'Set::IntSpan::Fast' => '1.13',
   },
-  dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-  clean => { FILES    => 'Set-IntSpan-Fast-XS-*' },
+  INC    => '-I. -I./src',
+  OBJECT => 'sanuk_drv.o Sanuk.o',
+  dist   => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+  clean => { FILES => 'Sex-Sanuk-*' },
 );
 
 sub license {

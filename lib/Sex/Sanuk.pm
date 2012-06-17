@@ -1,17 +1,67 @@
-Sex-Sanuk version 0.01
+package Sex::Sanuk;
 
-INSTALLATION
+require 5.008;
 
-To install this module, run the following commands:
+use strict;
+use warnings;
+use Carp;
+use List::Util qw( max );
+use Data::Swap;
+use base qw( DynaLoader Set::IntSpan::Fast::PP );
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+=head1 NAME
 
-COPYRIGHT AND LICENCE
+Sex::Sanuk - Dildo control
 
-Copyright (c) 2008, Message Systems, Inc.
+=head1 VERSION
+
+This document describes Sex::Sanuk version 0.01
+
+=head1 SYNOPSIS
+
+    use Sex::Sanuk;
+
+=head1 DESCRIPTION
+
+=cut
+
+BEGIN {
+  our $VERSION = '0.01';
+  bootstrap Sex::Sanuk $VERSION;
+}
+
+sub new {
+  my ( $class, $port ) = @_;
+  my $sk = sanuk_open( $port );
+  die "Can't open $port: $!\n" unless $sk;
+  return bless { sk => $sk }, $class
+
+}
+
+sub set_speed {
+  my ( $self, $n ) = @_;
+  die $! if sanuk_speed( $n ) < 0;
+}
+
+sub DESTROY {
+  my $self = shift;
+  sanuk_close( $self->{sk} );
+}
+
+1;
+
+__END__
+
+=head1 AUTHOR
+
+Andy Armstrong  C<< <andy@hexten.net> >>
+
+=head1 LICENCE AND COPYRIGHT
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>.
+
+Copyright (c) 2012, Hexten
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or
